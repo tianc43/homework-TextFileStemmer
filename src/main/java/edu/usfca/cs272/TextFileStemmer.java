@@ -3,12 +3,19 @@ package edu.usfca.cs272;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
+
+import edu.usfca.cs272.TextParser;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -36,7 +43,16 @@ public class TextFileStemmer {
 	 */
 	public static List<String> listStems(String line, Stemmer stemmer) {
 		// TODO Fill in implementation
-		throw new UnsupportedOperationException("Not yet implemented.");
+		try {
+			List<String> list = new LinkedList<String>();
+			String[] words = TextParser.parse(line); //clean+split
+			for (String word : words) {
+				list.add(stemmer.stem(word).toString());
+			}
+			return list;
+		}catch (Exception e) {
+			throw new UnsupportedOperationException("Not yet implemented.");
+		}
 	}
 
 	/**
@@ -68,9 +84,22 @@ public class TextFileStemmer {
 	 */
 	public static List<String> listStems(Path input) throws IOException {
 		// TODO Fill in implementation
-		throw new UnsupportedOperationException("Not yet implemented.");
+		List<String> list = new LinkedList<String>();
+		String line = "";
+		try(Scanner in = new Scanner(input, "UTF-8")){
+			while (in.hasNextLine()) {
+				line = in.nextLine();
+				list.addAll(TextFileStemmer.listStems(line));
+			}
+			return list;
+		}catch (IOException e) {
+			throw new IOException("IO error.");
+		}catch (NullPointerException npe) {
+			throw new NullPointerException(npe.getMessage());
+		}catch (Exception e) {
+			throw new UnsupportedOperationException("Not yet implemented.");
+		}
 	}
-
 	/**
 	 * Parses the line into unique, sorted, cleaned, and stemmed words.
 	 *
@@ -83,7 +112,16 @@ public class TextFileStemmer {
 	 */
 	public static Set<String> uniqueStems(String line, Stemmer stemmer) {
 		// TODO Fill in implementation
-		throw new UnsupportedOperationException("Not yet implemented.");
+		try {
+			Set<String> set = new TreeSet<String>();
+			List<String> list = TextFileStemmer.listStems(line, stemmer);
+			for (String word : list) {
+				set.add(word);
+			}
+			return set;
+		}catch(Exception e) {
+			throw new UnsupportedOperationException("Not yet implemented.");
+		}
 	}
 
 	/**
@@ -114,9 +152,24 @@ public class TextFileStemmer {
 	 * @see StandardCharsets#UTF_8
 	 * @see #uniqueStems(String, Stemmer)
 	 */
+	
 	public static Set<String> uniqueStems(Path input) throws IOException {
 		// TODO Fill in implementation
-		throw new UnsupportedOperationException("Not yet implemented.");
+		Set<String> set = new TreeSet<String>();
+		String line = "";
+		try(Scanner in = new Scanner(input, "UTF-8")){
+			while (in.hasNextLine()) {
+				line = in.nextLine();
+				set.addAll(TextFileStemmer.uniqueStems(line));
+			}
+			return set;
+		}catch (IOException e) {
+			throw new IOException("IO error.");
+		}catch (NullPointerException npe) {
+			throw new NullPointerException(npe.getMessage());
+		}catch (Exception e) {
+			throw new UnsupportedOperationException("Not yet implemented.");
+		}
 	}
 
 	/**
@@ -134,9 +187,26 @@ public class TextFileStemmer {
 	 * @see StandardCharsets#UTF_8
 	 * @see #uniqueStems(String, Stemmer)
 	 */
+
 	public static List<Set<String>> listUniqueStems(Path input) throws IOException {
 		// TODO Fill in implementation
-		throw new UnsupportedOperationException("Not yet implemented.");
+		List<Set<String>> list = new LinkedList<Set<String>>();
+		String line = "";
+		try(Scanner in = new Scanner(input, "UTF-8")){
+			while (in.hasNextLine()) {
+				TreeSet<String> set = new TreeSet<String>();
+				line = in.nextLine();
+				set.addAll(TextFileStemmer.uniqueStems(line));
+				list.add(set);
+			}
+			return list;
+		}catch (IOException e) {
+			throw new IOException("IO error.");
+		}catch (NullPointerException npe) {
+			throw new NullPointerException(npe.getMessage());
+		}catch (Exception e) {
+			throw new UnsupportedOperationException("Not yet implemented.");
+		}
 	}
 
 	/**
@@ -148,9 +218,8 @@ public class TextFileStemmer {
 	public static void main(String[] args) throws IOException {
 		// demonstrates how to use stemmer
 		Stemmer stemmer = new SnowballStemmer(ENGLISH);
-		String demo = "practicing";
+		String demo = "practise";
 		String stem = stemmer.stem(demo).toString();
-
 		System.out.println("____STEMMER DEMO____");
 		System.out.println("Word: " + demo + ", Stem: " + stem);
 		System.out.println();
